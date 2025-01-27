@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - yii2
+
+  web:
+    image: nginx:alpine
+    container_name: web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - yii2
+
+  db:
+    image: postgres:13
+    container_name: db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: app-db
+      POSTGRES_USER: valera
+      POSTGRES_PASSWORD: 211072
+    ports:
+      - "5432:5432"
+    networks:
+      - yii2
+
+networks:
+  yii2:
+    driver: bridge
