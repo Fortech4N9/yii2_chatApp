@@ -168,4 +168,37 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
+
+    /**
+     * Adds the user to the Elasticsearch index.
+     */
+    public function addToIndex()
+    {
+        $index = 'user';
+        $response = Yii::$app->elasticsearch->createCommand()->indexExists($index);
+    
+        if (!$response) {
+            $params = [
+                'index' => $index,
+                'body' => [
+                    'mappings' => [
+                        '_doc' => [
+                            'properties' => [
+                                'username' => ['type' => 'text'],
+                                'email' => ['type' => 'text'],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+    
+            Yii::$app->elasticsearch->createCommand()->createIndex($params);
+        }
+    
+        $userSearch = new UserSearch();
+        $userSearch->primaryKey = $this->id;
+        $userSearch->username = $this->username;
+        $userSearch->email = $this->email;
+        $userSearch->save();
+    }
 }

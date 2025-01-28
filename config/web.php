@@ -42,14 +42,25 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
-        'enablePrettyUrl' => true,
-        'showScriptName' => false,
-        'rules' => [
-            'signup' => 'user/signup',
-            'login' => 'user/login',
-            'logout' => 'user/logout',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+                'signup' => 'user/signup',
+                'login' => 'user/login',
+                'logout' => 'user/logout',
+                'chat' => 'chat/index',
+                'chat/search' => 'chat/search',
+            ],
         ],
-    ],
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'nodes' => [
+                ['http_address' => 'elasticsearch:9200'],
+            ],
+        ],
+        'elasticsearchComponent' => [
+            'class' => 'app\components\ElasticsearchComponent',
+        ],
     ],
     'params' => $params,
 ];

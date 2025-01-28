@@ -11,6 +11,7 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
 AppAsset::register($this);
+$this->registerCssFile('@web/css/chat.css');
 
 $this->registerCsrfMetaTags();
 $this->registerMetaTag(['charset' => Yii::$app->charset], 'charset');
@@ -40,6 +41,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
+            ['label' => 'Chat', 'url' => ['/chat/index']],
             Yii::$app->user->isGuest
                 ? ['label' => 'Login', 'url' => ['/user/login']]
                 : '<li class="nav-item">'

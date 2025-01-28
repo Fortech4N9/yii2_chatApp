@@ -13,6 +13,7 @@ use Yii;
  * @property string|null $updated_at
  *
  * @property Message[] $messages
+ * @property ChatParticipant[] $participants
  */
 class Chat extends \yii\db\ActiveRecord
 {
@@ -57,5 +58,49 @@ class Chat extends \yii\db\ActiveRecord
     public function getMessages()
     {
         return $this->hasMany(Message::class, ['chat_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Participants]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getParticipants()
+    {
+        return $this->hasMany(ChatParticipant::class, ['chat_id' => 'id']);
+    }
+
+    /**
+     * Creates a new chat with the given name and participants.
+     *
+     * @param string $name
+     * @param array $userIds
+     * @return Chat|null
+     */
+    public static function createChat($name, $userIds)
+    {
+        $chat = new self();
+        $chat->name = $name;
+        if ($chat->save()) {
+            foreach ($userIds as $userId) {
+                $participant = new ChatParticipant();
+                $participant->chat_id = $chat->id;
+                $participant->user_id = $userId;
+                $participant->save();
+            }
+            return $chat;
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the user is a participant of the chat.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function isParticipant($userId)
+    {
+        return $this->getParticipants()->where(['user_id' => $userId])->exists();
     }
 }
